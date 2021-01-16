@@ -1,76 +1,76 @@
-let numberInBuffer = 0
-let activeOperator = 'none'
+let buffer = '0'
+let result = 0
+let activeOperator = '='
+let isOldNumber = false
+const display = document.querySelector('.screen')
 
-function refreshScreen(newNumberDisplayed) {
-    document.querySelector(".screen").innerText = newNumberDisplayed
+/*function rerender() {
+    display.innerText = buffer
+}*/
+
+function clearScreen() {
+    display.innerText = '0'
+    result = 0
+    buffer = '0'
+    activeOperator = '='
 }
 
-function beginOperation(operator) {
-    numberInBuffer = parseInt(document.querySelector('.screen').innerText)
-    activeOperator = operator
-    refreshScreen('0')
-}
-
-function showResult(currentlyDisplayed) {
-    let secondNumber = parseInt(currentlyDisplayed)
-    let result
-    if (activeOperator === '+') {
-        result = numberInBuffer + secondNumber
-    } else if (activeOperator === '-') {
-        result = numberInBuffer - secondNumber
-    } else if (activeOperator === 'x') {
-        result = numberInBuffer * secondNumber
-    } else if (activeOperator === '÷') {
-        if (secondNumber !== 0) {
-            result = numberInBuffer / secondNumber
-        } else {
-            result = 'div 0'
-        }
+function removeDigit() {
+    if (display.innerText.length === 1) {
+        display.innerText = '0'
+    } else {
+        display.innerText = display.innerText.substring(0, display.innerText.length - 1)
     }
-    refreshScreen(result)
-    activeOperator = 'none'
-    numberInBuffer = result
+
+}
+
+function handleOperation(operator) {
+    switch (operator) {
+        case '+':
+            result += parseInt(buffer)
+            break
+        case '-':
+            result -= parseInt(buffer)
+            break
+        case '×':
+            result *= parseInt(buffer)
+            break
+        case '÷':
+            if (display.innerText !== '0') {
+                result /= parseInt(buffer)
+            }
+            break
+        case '=':
+            result = parseInt(buffer)
+            break
+    }
+    display.innerText = result
+    isOldNumber = true
 }
 
 document.querySelectorAll('.digit').forEach(item => {
     item.addEventListener('click', event => {
-        let numberDisplayed = document.querySelector('.screen').innerText
-        if (numberDisplayed === '0') {
-            numberDisplayed = event.target.innerText
+        if (isOldNumber || display.innerText === '0') {
+            display.innerText = event.target.innerText
+            isOldNumber = false
         } else {
-            numberDisplayed += event.target.innerText
+            display.innerText += event.target.innerText
         }
-        refreshScreen(numberDisplayed)
     })
 })
 
-document.querySelector('.clear').addEventListener('click', event => {
-    refreshScreen('0')
-    numberInBuffer = 0
-    activeOperator = 'none'
-})
+document.querySelector('.clear').addEventListener('click', clearScreen)
 
-document.querySelector('.backspace').addEventListener('click', event => {
-    let numberDisplayed = document.querySelector('.screen').innerText
-    if (numberDisplayed.length > 1) {
-        numberDisplayed = numberDisplayed.substr(0, numberDisplayed.length - 1)
-        refreshScreen(numberDisplayed)
-    } else {
-        refreshScreen('0')
-    }
-
-})
+document.querySelector('.backspace').addEventListener('click', removeDigit)
 
 document.querySelectorAll('.operator').forEach(item => {
+
     item.addEventListener('click', event => {
-        if (activeOperator === 'none') {
-            beginOperation(event.target.innerText)
-        } else {
-            showResult(document.querySelector('.screen').innerText)
+        buffer = parseInt(display.innerText)
+
+        if (event.target.innerText === '=' || event.target.innerText === activeOperator || activeOperator === '=') {
+            handleOperation(activeOperator)
         }
+        activeOperator = event.target.innerText
     })
 })
-
-
-console.log(document.querySelector('.operator').innerText)
-console.log(activeOperator)
