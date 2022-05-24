@@ -27,21 +27,21 @@ function removeDigit() {
 function handleOperation(operator) {
     switch (operator) {
         case '+':
-            result += parseInt(buffer)
+            result += parseFloat(buffer)
             break
         case '-':
-            result -= parseInt(buffer)
+            result -= parseFloat(buffer)
             break
         case '×':
-            result *= parseInt(buffer)
+            result *= parseFloat(buffer)
             break
         case '÷':
             if (display.innerText !== '0') {
-                result /= parseInt(buffer)
+                result /= parseFloat(buffer)
             }
             break
         case '=':
-            result = parseInt(buffer)
+            result = parseFloat(buffer)
             break
     }
     display.innerText = result
@@ -66,11 +66,12 @@ document.querySelector('.backspace').addEventListener('click', removeDigit)
 document.querySelectorAll('.operator').forEach(item => {
 
     item.addEventListener('click', event => {
-        buffer = parseInt(display.innerText)
+        buffer = parseFloat(display.innerText)
 
         if (event.target.innerText === '=' || event.target.innerText === activeOperator || activeOperator === '=') {
             handleOperation(activeOperator)
         }
         activeOperator = event.target.innerText
+        isOldNumber = true
     })
 })
